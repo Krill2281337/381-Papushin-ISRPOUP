@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ёлы-Палы — Новогодняя база отдыха</title>
+  <link rel="icon" type="image/png" href="favorite.png">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <!-- Снежинки -->
+  <div class="snow-container"></div>
+  <!-- Фон с анимацией -->
+  <div class="bg-animation">
+    <div class="stars"></div>
+    <div class="twinkling"></div>
+  </div>
+  <!-- Гирлянды -->
+  <div class="garland garland-1"></div>
+  <div class="garland garland-2"></div>
+  <div class="garland garland-3"></div>
+  <!-- Приложение -->
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-inner">
+        <div class="brand">
+          <div class="logo-wrapper">
+            <img src="logo.png" alt="Ёлы-Палы" class="brand-logo">
+            <div class="santa-hat">🎅</div>
+          </div>
+          <div class="brand-text">
+            <div class="new-year-label">🎄 БРОНЬ 2025-2026</div>
+          </div>
+        </div>
+        <nav class="side-nav">
+          <a href="#home" class="nav-item active"><span class="nav-icon">🏠</span><span>Главная</span></a>
+          <a href="#cottages" class="nav-item"><span class="nav-icon">🌲</span><span>Домики</span></a>
+          <a href="#cottages" class="nav-item"><span class="nav-icon">💰</span><span>Цены</span></a>
+          <a href="#services" class="nav-item"><span class="nav-icon">🎁</span><span>Услуги</span></a>
+          <a href="#gallery" class="nav-item"><span class="nav-icon">📸</span><span>Галерея</span></a>
+          <a href="#map-section" class="nav-item"><span class="nav-icon">📍</span><span>Местоположение</span></a>
+          <a href="#contact" class="nav-item"><span class="nav-icon">📞</span><span>Контакты</span></a>
+        </nav>
+        <div class="sidebar-footer">
+          <div class="contact-block">
+            <div class="urgent-banner">
+              <div class="urgent-text">🔥 СКОРО НОВЫЙ ГОД!</div>
+              <div class="urgent-sub">Места разбирают быстро</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <!-- Main -->
+    <main class="main">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-content">
+          <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+            <span></span><span></span><span></span>
+          </button>
+          <div class="header-center">
+            <div class="new-year-counter" id="newYearCounter">
+              До Нового Года: <span class="counter-number">28</span> дней
+            </div>
+          </div>
+          <button class="book-btn" id="bookNow">🎄 Забронировать</button>
+        </div>
+      </header>
+      <!-- Hero Section -->
+      <section id="home" class="hero">
+        <div class="hero-content">
+          <div class="hero-badge">НОВОГОДНИЙ СЕЗОН 2025/26</div>
+          <h1 class="hero-title">
+            Встретьте Новый Год <span class="highlight">в сказочном лесу</span>
+          </h1>
+          <p class="hero-subtitle">
+            Уютные номера, домик на берегу, русская баня, волшебная атмосфера настоящей зимней сказки
+          </p>
+          <div class="hero-features">
+            <div class="feature"><span class="feature-icon">🎄</span><span>Наряженная ёлка</span></div>
+          </div>
+          <div class="hero-actions">
+            <a href="#cottages" class="btn btn-primary">🏠 Выбрать домик</a>
+            <a href="#cottages" class="btn btn-secondary">💰 Посмотреть цены</a>
+          </div>
+          <div class="hero-stats">
+            <div class="stat"><div class="stat-number">1</div><div class="stat-label">уютный домик</div></div>
+            <div class="stat"><div class="stat-number">6</div><div class="stat-label">уютных номеров</div></div>
+            <div class="stat"><div class="stat-number">96%</div><div class="stat-label">гостей рекомендуют</div></div>
+            <div class="stat"><div class="stat-number">5</div><div class="stat-label">лет опыта</div></div>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="main-card">
+            <div class="card-image"></div>
+            <div class="card-overlay">
+              <div class="card-badge">САМЫЙ ПОПУЛЯРНЫЙ</div>
+              <h3>Люкс</h3>
+              <p>Для семьи до 5 человек</p>
+              <div class="card-price">от 4 000 ₽</div>
+            </div>
+          </div>
+          <div class="floating-cards">
+          </div>
+        </div>
+      </section>
+      <!-- Cottages -->
+      <section id="cottages" class="cottages-section">
+        <div class="container">
+          <div class="section-header">
+            <h2>Аренда уютных домиков и номеров</h2>
+            <p>Выберите идеальный вариант для вашего отдыха</p>
+          </div>
+          <div class="cottages-grid">
+            <div class="cottage-card" data-type="small">
+              <div class="cc-image" style="background-color: #b5651d;"></div>
+              <div class="cc-content">
+                <h3>Домик</h3>
+                <p>Вместимость: 4 человека</p>
+                <table class="cc-prices">
+                  <tr><th>Период</th><th>Цена</th></tr>
+                  <tr><td>Пн–Чт</td><td>4 000 ₽</td></tr>
+                  <tr><td>Пт–Вс</td><td>5 500 ₽</td></tr>
+                  <tr><td>1–20 дек 2025</td><td>8 800 ₽</td></tr>
+                  <tr><td>21–30 дек 2025</td><td>10 450 ₽</td></tr>
+                  <tr><td>31 дек – 2 янв (3 суток)</td><td>35 000 ₽</td></tr>
+                  <tr><td>3–10 янв 2026</td><td>10 450 ₽</td></tr>
+                </table>
+                <button class="cc-book-btn" onclick="openBookingModal('Домик')">Забронировать</button>
+              </div>
+            </div>
+            <div class="cottage-card" data-type="small">
+              <div class="cc-image" style="background-color: #c48c31;"></div>
+              <div class="cc-badge premium">ЛЮКС</div>
+              <div class="cc-content">
+                <h3>Люкс</h3>
+                <p>Вместимость: 4 человека (при желании 5)</p>
+                <table class="cc-prices">
+                  <tr><th>Период</th><th>Цена</th></tr>
+                  <tr><td>Пн–Чт</td><td>4 000 ₽</td></tr>
+                  <tr><td>Пт–Вс</td><td>6 000 ₽</td></tr>
+                  <tr><td>1–20 дек 2025</td><td>9 600 ₽</td></tr>
+                  <tr><td>21–30 дек 2025</td><td>11 400 ₽</td></tr>
+                  <tr><td>31 дек – 2 янв (3 суток)</td><td>35 000 ₽</td></tr>
+                  <tr><td>3–10 янв 2026</td><td>11 400 ₽</td></tr>
+                </table>
+                <button class="cc-book-btn" onclick="openBookingModal('Люкс')">Забронировать</button>
+              </div>
+            </div>
+            <div class="cottage-card" data-type="small">
+              <div class="cc-image" style="background-color: #a26c3a;"></div>
+              <div class="cc-content">
+                <h3>Полулюкс</h3>
+                <p>Вместимость: 3 человека</p>
+                <table class="cc-prices">
+                  <tr><th>Период</th><th>Цена</th></tr>
+                  <tr><td>Пн–Чт</td><td>3 500 ₽</td></tr>
+                  <tr><td>Пт–Вс</td><td>5 000 ₽</td></tr>
+                  <tr><td>1–20 дек 2025</td><td>8 000 ₽</td></tr>
+                  <tr><td>21–30 дек 2025</td><td>9 500 ₽</td></tr>
+                  <tr><td>31 дек – 2 янв (3 суток)</td><td>33 000 ₽</td></tr>
+                  <tr><td>3–10 янв 2026</td><td>9 500 ₽</td></tr>
+                </table>
+                <button class="cc-book-btn" onclick="openBookingModal('Полулюкс')">Забронировать</button>
+              </div>
+            </div>
+            <div class="cottage-card" data-type="small">
+              <div class="cc-image" style="background-color: #d2b48c;"></div>
+              <div class="cc-content">
+                <h3>Стандарт</h3>
+                <p>Вместимость: 4 человека</p>
+                <table class="cc-prices">
+                  <tr><th>Период</th><th>Цена</th></tr>
+                  <tr><td>Пн–Чт</td><td>3 500 ₽</td></tr>
+                  <tr><td>Пт–Вс</td><td>5 000 ₽</td></tr>
+                  <tr><td>1–20 дек 2025</td><td>8 000 ₽</td></tr>
+                  <tr><td>21–30 дек 2025</td><td>9 500 ₽</td></tr>
+                  <tr><td>31 дек – 2 янв (3 суток)</td><td>30 000 ₽</td></tr>
+                  <tr><td>3–10 янв 2026</td><td>9 500 ₽</td></tr>
+                </table>
+                <button class="cc-book-btn" onclick="openBookingModal('Стандарт')">Забронировать</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Gallery -->
+      <section id="gallery" class="gallery-section">
+        <div class="container">
+          <div class="section-header">
+            <h2>Фото базы отдыха</h2>
+            <p>Посмотрите, как уютно у нас</p>
+          </div>
+          <div class="gallery-grid">
+            <div class="gallery-item"><img src="images/base1.jpg" alt="Главная площадь базы"></div>
+            <div class="gallery-item"><img src="images/base2.jpg" alt="Домик"></div>
+            <div class="gallery-item"><img src="images/base3.jpg" alt="Баня "></div>
+            <div class="gallery-item"><img src="images/base5.jpg" alt="Ёлка у домика"></div>
+            <div class="gallery-item"><img src="images/base6.jpg" alt="Закаты и рассветы на берегу"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Преимущества -->
+      <section class="advantages-section">
+        <div class="container">
+          <h2 class="section-title">НАШИ ПРЕИМУЩЕСТВА</h2>
+          <div class="advantages-grid">
+
+            <div class="advantage-item">
+              <div class="icon-circle"><i class="fa-solid fa-map-marker-alt"></i></div>
+              <h3>Удобное расположение</h3>
+              <p>Всего 30 км от Екатеринбурга и 4 км от Заречного</p>
+            </div>
+            <div class="advantage-item">
+              <div class="icon-circle"><i class="fa-solid fa-car"></i></div>
+              <h3>Бесплатная парковка</h3>
+              <p>Парковка под охраной — без лишних хлопот</p>
+            </div>
+            <div class="advantage-item">
+              <div class="icon-circle"><i class="fa-solid fa-umbrella-beach"></i></div>
+              <h3>Собственный пляж</h3>
+              <p>У нас есть на пляже освещение,и он находится под охраной</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Services -->
+      <section id="services" class="services-section">
+        <div class="container">
+          <div class="section-header">
+            <h2>Наши услуги</h2>
+            <p>Сделаем ваш отдых по-настоящему волшебным</p>
+          </div>
+          <div class="services-grid">
+            <div class="service-card"><div class="service-icon">🎅</div><h3>Дед Мороз и Снегурочка</h3><p>Предновогоднее поздравление Дед мороза и Снегурочки</p><div class="service-price">Стоимость уточняется при бронировании</div></div>
+            <div class="service-card"><div class="service-icon">🎆</div><h3>Развлечения</h3><p>Аренда снегохода, бубликов и лыж</p><div class="service-price">Стоимость уточняется при бронировании</div></div>
+            <div class="service-card"><div class="service-icon">🍽️</div><h3>Заказное меню</h3><p>Приготовление горячих блюд на заказ: уха, копченая рыба (терпуг), плов, шашлык</p><div class="service-price">Стоимость уточняется при бронировании</div></div>
+            <div class="service-card"><div class="service-icon">🎄</div><h3>Украшенная территория</h3><p>Украшенная база отдыха</p><div class="service-price">включено</div></div>
+          </div>
+        </div>
+      </section>
+      <!-- CTA -->
+      <section class="cta-section">
+        <div class="container">
+          <div class="cta-content">
+            <h2>Успейте забронировать!</h2>
+            <p>Осталось всего несколько свободных домиков на новогодние даты</p>
+            <button class="btn btn-large" onclick="openBookingModal()">🎄 Забронировать новогоднюю ночь</button>
+          </div>
+        </div>
+      </section>
+      <!-- Вопросы -->
+      <section class="questions-section">
+        <div class="container">
+          <div class="whatsapp-banner enhanced">
+            <h3>Остались вопросы?</h3>
+            <p>Если у вас остались вопросы или хотите уточнить детали — напишите нам в WhatsApp, и мы быстро ответим</p>
+            <a href="https://api.whatsapp.com/send/?phone=79506401939&text=Здравствуйте!%0A%0AХочу+забронировать+домик!%0A%0A&type=phone_number&app_absent=0" target="_blank" class="btn-whatsapp">💚 Написать в WhatsApp</a>
+          </div>
+        </div>
+      </section>
+      <!-- Карта -->
+      <section class="map-section" id="map-section">
+        <div class="container">
+          <h2>Мы на карте</h2>
+          <p>Свердловская область, база отдыха «Ёлы-Палы»</p>
+          <div class="map-wrapper">
+            <iframe
+              src="https://yandex.ru/map-widget/v1/?from=mapframe&ll=60.800509%2C56.820787&mode=routes&rtext=56.828495%2C60.567211~56.821109%2C61.268981&rtt=auto&ruri=~ymapsbm1%3A%2F%2Forg%3Foid%3D156359092877&source=mapframe&utm_source=mapframe&z=10.13"
+              width="100%"
+              height="400"
+              frameborder="0"
+              aria-hidden="false"
+              title="Yandex map">
+            </iframe>
+          </div>
+        </div>
+      </section>
+      <!-- Footer -->
+      <footer class="footer">
+        <div class="container">
+          <div class="footer-content">
+            <div class="footer-info">
+              <div class="footer-logo">Ёлы-Палы</div>
+              <p>База отдыха в сказочном лесу</p>
+              <div class="social-links">
+                <a href="https://vk.com/club232119990?from=groups" class="social-link" target="_blank" rel="noopener">
+                  <img src="VK.png" alt="VK" class="icon">
+                </a>
+              </div>
+            </div>
+
+            <div class="footer-contacts" id="contact">
+              <h4>Контакты</h4>
+              <div class="contact-item">+7 (343) 290-07-07</div>
+              <div class="contact-item">+7 (902) 409-07-07</div>
+              <div class="contact-item">riotur@internet.ru</div>
+              <div class="contact-item">Свердловская обл., г.о. Заречный, база отдыха Ёлы-Палы, зд. 6</div>
+            </div>
+
+            <div class="footer-mode">
+              <h4>Режим работы</h4>
+              <div class="contact-item">Пн–Вс: 10:00–22:00</div>
+              <div class="contact-item">Без выходных</div>
+            </div>
+
+            <div class="footer-reviews">
+              <h4>Отзывы гостей</h4>
+              <div class="yandex-widget">
+                <iframe
+                  src="https://yandex.ru/maps-reviews-widget/156359092877?comments"
+                  width="350"
+                  height="250"
+                  frameborder="0"
+                  style="border-radius: 12px;"
+                  title="Yandex reviews">
+                </iframe>
+                <a href="https://yandex.ru/maps/org/yely_paly/156359092877/" target="_blank" rel="noopener" class="yandex-link">Читать все отзывы →</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="footer-bottom">
+            <div>© 2025 Ёлы-Палы — Все права защищены!</div>
+          </div>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Модальное окно бронирования -->
+<div class="modal" id="bookingModal" aria-hidden="true">
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="bookingTitle">
+    <div class="modal-header">
+      <h3 id="bookingTitle">🎅 Бронирование новогоднего заезда</h3>
+      <button class="modal-close" onclick="closeModal()" aria-label="Закрыть">×</button>
+    </div>
+    <div class="modal-body">
+      <form class="booking-form" onsubmit="handleBooking(event)">
+        <!-- Выбор домика -->
+        <div class="form-group">
+          <label for="cottageSelect">Выберите дом или номер</label>
+          <select id="cottageSelect" required>
+            <option value="" disabled selected>— Выберите вариант —</option>
+            <option value="Домик">Домик (4 чел.)</option>
+            <option value="Люкс">Люкс (4–5 чел.)</option>
+            <option value="Полулюкс">Полулюкс (3 чел.)</option>
+            <option value="Стандарт">Стандарт (4 чел.)</option>
+          </select>
+        </div>
+        <!-- Дата заезда -->
+        <div class="form-group">
+          <label for="checkinDate">Дата заезда</label>
+          <input type="date" id="checkinDate" required>
+        </div>
+        <!-- Количество ночей -->
+        <div class="form-group">
+          <label for="nightsCount">Количество ночей</label>
+          <input type="number" id="nightsCount" min="1" value="2" required>
+        </div>
+        <!-- Имя -->
+        <div class="form-group">
+          <label for="guestName">Ваше имя</label>
+          <input type="text" id="guestName" placeholder="Как к вам обращаться?" required>
+        </div>
+        <!-- Телефон -->
+        <div class="form-group">
+          <label for="guestPhone">Телефон</label>
+          <input type="tel" id="guestPhone" placeholder="+7 (___) ___-__-__" required>
+        </div>
+        <!-- Кнопка -->
+        <button type="submit" class="btn btn-primary btn-full">🎄 Отправить заявку</button>
+      </form>
+    </div>
+  </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
