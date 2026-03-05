@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Новая заявка</h2>
+
+<form method="post">
+
+<input class="form-control mb-2" name="device" placeholder="Тип техники">
+
+<input class="form-control mb-2" name="model" placeholder="Модель">
+
+<input class="form-control mb-2" name="problem" placeholder="Описание проблемы">
+
+<input class="form-control mb-2" name="client" placeholder="ФИО клиента">
+
+<input class="form-control mb-2" name="phone" placeholder="Телефон">
+
+<button class="btn btn-success">Создать</button>
+
+</form>
+
+{% endblock %}

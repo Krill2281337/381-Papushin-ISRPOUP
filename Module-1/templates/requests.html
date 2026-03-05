@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Список заявок</h2>
+
+<table class="table table-bordered">
+
+<tr>
+
+<th>ID</th>
+<th>Техника</th>
+<th>Модель</th>
+<th>Проблема</th>
+<th>Статус</th>
+
+</tr>
+
+{% for r in requests %}
+
+<tr>
+
+<td>{{ r.id }}</td>
+<td>{{ r.device }}</td>
+<td>{{ r.model }}</td>
+<td>{{ r.problem }}</td>
+<td>{{ r.status }}</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+{% endblock %}
