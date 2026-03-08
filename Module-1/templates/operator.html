@@ -1,0 +1,25 @@
+<h1>Панель оператора</h1>
+
+<table border="1">
+
+<tr>
+<th>ID</th>
+<th>Клиент</th>
+<th>Мастер</th>
+<th>Описание</th>
+<th>Статус</th>
+</tr>
+
+{% for r in requests %}
+
+<tr>
+<td>{{ r.requestID }}</td>
+<td>{{ r.clientID }}</td>
+<td>{{ r.masterID }}</td>
+<td>{{ r.description }}</td>
+<td>{{ r.status }}</td>
+</tr>
+
+{% endfor %}
+
+</table>
