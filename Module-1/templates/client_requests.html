@@ -1,61 +1,92 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мои заявки</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
-
 <body>
+<div class="page">
+    <header class="topbar">
+        <div class="topbar-left">
+            <div class="logo">БытСервис</div>
+            <div class="welcome">
+                <span class="welcome-label">Добро пожаловать,</span>
+                <span class="welcome-name">{{ client_name }}</span>
+            </div>
+        </div>
+        <div class="topbar-center">
+            <h1>Мои заявки</h1>
+            <p>Просмотр и редактирование обращений</p>
+        </div>
+        <div class="topbar-right">
+            <form method="get" action="/create_request">
+                <button class="btn btn-primary" type="submit">+ Создать заявку</button>
+            </form>
+            <form method="post" action="/logout">
+                <button class="btn btn-secondary" type="submit">Выйти</button>
+            </form>
+        </div>
+    </header>
 
-<header>
-    <h2>Мои заявки</h2>
-<p>Вы вошли как: <b>{{ user.fio }}</b></p>
-    <div style="position:absolute; top:20px; right:20px;">
-        <form method="get" action="/create_request" style="display:inline;">
-            <button type="submit">Создать заявку</button>
-        </form>
+    <main class="content">
+        <section class="panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Список заявок</h2>
+                    <p>Здесь отображаются только ваши обращения</p>
+                </div>
+                <div class="requests-count">Всего: <strong>{{ requests|length }}</strong></div>
+            </div>
 
-        <form method="post" action="/logout" style="display:inline;">
-            <button type="submit">Выход</button>
-        </form>
-    </div>
-</header>
-
-<div class="container">
-
-<table class="requests-table">
-
-<tr>
-    <th>№ заявки</th>
-    <th>Тип техники</th>
-    <th>Модель</th>
-    <th>Описание проблемы</th>
-    <th>Статус</th>
-    <th>Дата начала</th>
-</tr>
-
-{% for r in requests %}
-<tr>
-
-<td>{{ r.requestID }}</td>
-
-<td>{{ r.homeTechType }}</td>
-
-<td>{{ r.homeTechModel }}</td>
-
-<td>{{ r.problemDescription }}</td>
-
-<td>{{ r.requestStatus }}</td>
-
-<td>{{ r.startDate }}</td>
-
-</tr>
-{% endfor %}
-
-</table>
-
+            {% if requests %}
+            <div class="table-wrapper">
+                <table class="requests-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Тип техники</th>
+                        <th>Модель</th>
+                        <th>Описание</th>
+                        <th>Статус</th>
+                        <th>Дата начала</th>
+                        <th>Действие</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for r in requests %}
+                    <tr>
+                        <td class="request-id">#{{ r.requestID }}</td>
+                        <td>{{ r.homeTechType }}</td>
+                        <td>{{ r.homeTechModel }}</td>
+                        <td class="description">{{ r.problemDescription }}</td>
+                        <td>{{ r.requestStatus }}</td>
+                        <td>{{ r.startDate }}</td>
+                        <td>
+                            {% if r.requestStatus == 'Новая заявка' %}
+                            <a href="/edit_request/{{ r.requestID }}">Редактировать</a>
+                            {% else %}
+                            —
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">🛠️</div>
+                <h3>Заявок пока нет</h3>
+                <p>Создайте первую заявку, и она появится в этом списке.</p>
+                <form method="get" action="/create_request">
+                    <button class="btn btn-primary" type="submit">Создать первую заявку</button>
+                </form>
+            </div>
+            {% endif %}
+        </section>
+    </main>
 </div>
-
 </body>
 </html>

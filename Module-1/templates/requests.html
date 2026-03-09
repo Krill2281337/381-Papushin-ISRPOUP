@@ -1,74 +1,97 @@
 <!DOCTYPE html>
-<html>
-<link rel="stylesheet" href="/static/style.css">
+<html lang="ru">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Панель мастера</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
-
 <body>
+<div class="container">
+    <div class="page-header card master-header">
+        <div class="master-header-info">
+            <p class="page-kicker">Рабочая панель</p>
+            <h1>{% if request.session.user %}Мастер: {{ request.session.user.fio }}{% else %}Панель мастера{% endif %}</h1>
+            <p class="page-subtitle">Управление заявками, статусами, комментариями и запчастями</p>
+        </div>
+        <form action="/logout" method="post" class="logout-form">
+            <button type="submit" class="btn-secondary">Выйти</button>
+        </form>
+    </div>
 
-<!-- Шапка с именем мастера и кнопкой выхода -->
-<div style="display:flex; justify-content: space-between; align-items: center; margin-bottom:20px;">
-    <h2>
-        {% if request.session.user %}
-            Мастер: {{ request.session.user.fio }}
+    <div class="card">
+        <div class="section-header">
+            <div>
+                <h2>Мои заявки</h2>
+                <p class="section-subtitle">Список обращений, закреплённых за мастером</p>
+            </div>
+            <div class="requests-badge">Всего заявок: <strong>{{ requests|length }}</strong></div>
+        </div>
+
+        {% if requests %}
+        <div class="table-wrapper">
+            <table class="master-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Техника</th>
+                        <th>Модель</th>
+                        <th>Проблема</th>
+                        <th>Статус</th>
+                        <th>Запчасти</th>
+                        <th>Изменить статус</th>
+                        <th>Комментарий</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in requests %}
+                    <tr>
+                        <td class="request-id">#{{ r.requestID }}</td>
+                        <td>{{ r.homeTechType }}</td>
+                        <td>{{ r.homeTechModel }}</td>
+                        <td class="problem-cell">{{ r.problemDescription }}</td>
+                        <td>{{ r.requestStatus }}</td>
+                        <td>{{ r.repairParts if r.repairParts else 'Нет' }}</td>
+                        <td>
+                            <form action="/update_status" method="post" class="inline-form" style="margin-bottom:8px;">
+                                <input type="hidden" name="request_id" value="{{ r.requestID }}">
+                                <input type="hidden" name="master_id" value="{{ master_id }}">
+                                <select name="status">
+                                    {% for s in statuses %}
+                                    <option value="{{ s }}" {% if r.requestStatus == s %}selected{% endif %}>{{ s }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit">Изменить</button>
+                            </form>
+
+                            <form action="/add_parts" method="post" class="inline-form">
+                                <input type="hidden" name="request_id" value="{{ r.requestID }}">
+                                <input type="hidden" name="master_id" value="{{ master_id }}">
+                                <input type="text" name="parts" placeholder="Например: мотор, фильтр" value="{{ r.repairParts if r.repairParts else '' }}">
+                                <button type="submit">Запчасти</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form action="/add_comment" method="post" class="inline-form">
+                                <input type="hidden" name="request_id" value="{{ r.requestID }}">
+                                <input type="hidden" name="master_id" value="{{ master_id }}">
+                                <input type="text" name="comment" placeholder="Комментарий мастера">
+                                <button type="submit">Добавить</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         {% else %}
-            Панель мастера
+        <div class="empty-state">
+            <div class="empty-icon">🧰</div>
+            <h3>Заявок пока нет</h3>
+            <p>Когда заявки будут назначены мастеру, они появятся здесь.</p>
+        </div>
         {% endif %}
-    </h2>
-
-    <form action="/logout" method="post">
-        <button type="submit">Выйти</button>
-    </form>
+    </div>
 </div>
-
-<h3>Мои заявки</h3>
-
-<table class="requests-table">
-
-<tr>
-    <th>ID</th>
-    <th>Техника</th>
-    <th>Модель</th>
-    <th>Проблема</th>
-    <th>Статус</th>
-    <th>Изменить статус</th>
-    <th>Добавить запчасти</th>
-</tr>
-
-{% for r in requests %}
-<tr>
-    <td>{{ r.requestID }}</td>
-    <td>{{ r.homeTechType }}</td>
-    <td>{{ r.homeTechModel }}</td>
-    <td>{{ r.problemDescription }}</td>
-    <td>{{ r.requestStatus }}</td>
-
-    <td>
-        <form action="/update_status" method="post">
-            <input type="hidden" name="request_id" value="{{ r.requestID }}">
-            <input type="hidden" name="master_id" value="{{ master_id }}">
-            <select name="status">
-                <option>Новая заявка</option>
-                <option>В процессе ремонта</option>
-                <option>Готова к выдаче</option>
-            </select>
-            <button type="submit">Изменить</button>
-        </form>
-    </td>
-
-    <td>
-        <form action="/add_parts" method="post">
-            <input type="hidden" name="request_id" value="{{ r.requestID }}">
-            <input type="hidden" name="master_id" value="{{ master_id }}">
-            <input type="text" name="parts" placeholder="Запчасти">
-            <button type="submit">Добавить</button>
-        </form>
-    </td>
-</tr>
-{% endfor %}
-
-</table>
-
 </body>
 </html>

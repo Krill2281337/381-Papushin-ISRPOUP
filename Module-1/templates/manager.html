@@ -1,60 +1,158 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="/static/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Панель менеджера</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
-
 <body>
+<div class="container">
+    <div class="page-header card">
+        <div>
+            <p class="page-kicker">Панель менеджера</p>
+            <h1>{% if request.session.user %}Менеджер: {{ request.session.user.fio }}{% else %}Панель менеджера{% endif %}</h1>
+            <p class="page-subtitle">Управление заявками, сроками и комментариями</p>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center;">
+            <a href="/statistics" class="btn-primary" style="text-decoration:none; padding:10px 16px; border-radius:8px;">Статистика</a>
+            <a href="/review" class="btn-primary" style="text-decoration:none; padding:10px 16px; border-radius:8px;">QR-опрос</a>
+            <form action="/logout" method="post" class="logout-form">
+                <button type="submit" class="btn-secondary">Выйти</button>
+            </form>
+        </div>
+    </div>
 
-<h1>Все заявки в системе</h1>
+    <div class="card section-card">
+        <div class="section-header">
+            <div>
+                <h2>Заявки</h2>
+                <p class="section-subtitle">Все заявки в системе</p>
+            </div>
+            <div class="requests-badge">Всего: <strong>{{ requests|length }}</strong></div>
+        </div>
 
-<table class="requests-table">
+        <div class="table-wrapper">
+            <table class="manager-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Клиент</th>
+                        <th>Мастер</th>
+                        <th>Проблема</th>
+                        <th>Статус</th>
+                        <th>Запчасти</th>
+                        <th>Дата</th>
+                        <th>Изменить</th>
+                        <th>Срок</th>
+                        <th>Удалить</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in requests %}
+                    <tr>
+                        <td class="request-id">#{{ r.requestID }}</td>
+                        <td>{{ r.clientFIO if r.clientFIO else r.clientID }}</td>
+                        <td>{{ r.masterFIO if r.masterFIO else 'Не назначен' }}</td>
+                        <td class="problem-cell">{{ r.problemDescription }}</td>
+                        <td>{{ r.requestStatus }}</td>
+                        <td>{{ r.repairParts if r.repairParts else 'Нет' }}</td>
+                        <td>{{ r.startDate }}</td>
+                        <td>
+                            <form action="/manager_update_request" method="post" class="inline-form">
+                                <input type="hidden" name="request_id" value="{{ r.requestID }}">
 
-<tr>
-<th>ID заявки</th>
-<th>ID клиента</th>
-<th>ID мастера</th>
-<th>Описание проблемы</th>
-<th>Статус</th>
-<th>Запчасти</th>
-<th>Дата</th>
-</tr>
+                                <select name="status">
+                                    {% for s in statuses %}
+                                    <option value="{{ s }}" {% if r.requestStatus == s %}selected{% endif %}>{{ s }}</option>
+                                    {% endfor %}
+                                </select>
 
-{% if requests %}
+                                <select name="master_id">
+                                    <option value="">Без мастера</option>
+                                    {% for master in masters %}
+                                    <option value="{{ master.userID }}" {% if r.masterID == master.userID %}selected{% endif %}>{{ master.fio }}</option>
+                                    {% endfor %}
+                                </select>
 
-{% for r in requests %}
+                                <input type="text" name="parts" placeholder="Запчасти" value="{{ r.repairParts if r.repairParts else '' }}">
+                                <button type="submit" class="btn-edit">Сохранить</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form action="/extend_deadline" method="post" class="inline-form">
+                                <input type="hidden" name="request_id" value="{{ r.requestID }}">
+                                <input type="date" name="new_deadline" required>
+                                <button type="submit" class="btn-edit">Продлить</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form action="/delete_request" method="post">
+                                <input type="hidden" name="request_id" value="{{ r.requestID }}">
+                                <button type="submit" class="btn-danger">Удалить</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-<tr>
+    <div class="card section-card">
+        <div class="section-header">
+            <div>
+                <h2>Пользователи</h2>
+                <p class="section-subtitle">Список зарегистрированных пользователей</p>
+            </div>
+            <div class="requests-badge">Всего: <strong>{{ users|length }}</strong></div>
+        </div>
+        <div class="table-wrapper">
+            <table class="manager-table">
+                <thead>
+                    <tr><th>ID</th><th>ФИО</th><th>Логин</th><th>Роль</th></tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr><td>#{{ u.userID }}</td><td>{{ u.fio }}</td><td>{{ u.login }}</td><td>{{ u.type }}</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-<td>{{ r.requestID }}</td>
-
-<td>{{ r.clientID }}</td>
-
-<td>{{ r.masterID or "Не назначен" }}</td>
-
-<td>{{ r.problemDescription }}</td>
-
-<td>{{ r.requestStatus }}</td>
-
-<td>{{ r.repairParts or "Нет" }}</td>
-
-<td>{{ r.startDate }}</td>
-
-</tr>
-
-{% endfor %}
-
-{% else %}
-
-<tr>
-<td colspan="7">Заявок пока нет</td>
-</tr>
-
-{% endif %}
-
-</table>
-
+    <div class="card section-card">
+        <div class="section-header">
+            <div>
+                <h2>Комментарии</h2>
+                <p class="section-subtitle">Комментарии по заявкам</p>
+            </div>
+            <div class="requests-badge">Всего: <strong>{{ comments|length }}</strong></div>
+        </div>
+        <div class="table-wrapper">
+            <table class="manager-table">
+                <thead>
+                    <tr><th>ID</th><th>ID заявки</th><th>ID мастера</th><th>Комментарий</th><th>Удалить</th></tr>
+                </thead>
+                <tbody>
+                    {% for c in comments %}
+                    <tr>
+                        <td>#{{ c.commentID }}</td>
+                        <td>{{ c.requestID }}</td>
+                        <td>{{ c.masterID }}</td>
+                        <td class="problem-cell">{{ c.message }}</td>
+                        <td>
+                            <form action="/delete_comment" method="post">
+                                <input type="hidden" name="comment_id" value="{{ c.commentID }}">
+                                <button type="submit" class="btn-danger">Удалить</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 </body>
 </html>

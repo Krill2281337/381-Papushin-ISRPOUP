@@ -1,22 +1,62 @@
-<h2>Статистика сервиса</h2>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Статистика сервиса</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+    <div class="page-header card">
+        <div>
+            <p class="page-kicker">Отчётность</p>
+            <h1>Статистика сервиса</h1>
+            <p class="page-subtitle">Основные показатели работы отдела обслуживания</p>
+        </div>
+        <a href="javascript:history.back()" class="btn-secondary" style="text-decoration:none; padding:10px 16px; border-radius:8px;">Назад</a>
+    </div>
 
-<p>Всего заявок: {{ stats.total }}</p>
-<p>Выполнено: {{ stats.completed }}</p>
+    <div class="card section-card">
+        <p><strong>Всего заявок:</strong> {{ stats.total }}</p>
+        <p><strong>Выполнено:</strong> {{ stats.completed }}</p>
+        <p><strong>Среднее время выполнения:</strong> {% if stats.avg_days is not none %}{{ stats.avg_days }} дн.{% else %}нет данных{% endif %}</p>
+    </div>
 
-<h3>Статистика по технике</h3>
+    <div class="card section-card">
+        <h2>Статистика по типам неисправностей</h2>
+        <div class="table-wrapper">
+            <table class="manager-table">
+                <thead>
+                <tr><th>Неисправность</th><th>Количество</th></tr>
+                </thead>
+                <tbody>
+                {% for item in stats.fault_stats %}
+                <tr><td>{{ item.problemDescription }}</td><td>{{ item.count }}</td></tr>
+                {% else %}
+                <tr><td colspan="2">Нет данных</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-<table border="1">
-<tr>
-<th>Тип техники</th>
-<th>Количество</th>
-</tr>
-
-{% for t in stats.tech_stats %}
-
-<tr>
-<td>{{ t.homeTechType }}</td>
-<td>{{ t.count }}</td>
-</tr>
-
-{% endfor %}
-</table>
+    <div class="card section-card">
+        <h2>Статистика по типам техники</h2>
+        <div class="table-wrapper">
+            <table class="manager-table">
+                <thead>
+                <tr><th>Тип техники</th><th>Количество</th></tr>
+                </thead>
+                <tbody>
+                {% for item in stats.tech_stats %}
+                <tr><td>{{ item.homeTechType }}</td><td>{{ item.count }}</td></tr>
+                {% else %}
+                <tr><td colspan="2">Нет данных</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

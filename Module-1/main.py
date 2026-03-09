@@ -3,238 +3,195 @@ from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
-
 import qrcode
 
 from database import (
-    get_user_by_login,
-    get_master_requests,
-    update_status,
-    update_parts,
-    get_client_requests,
-    get_all_requests,
-    create_request,
-    assign_master,
     add_comment,
+    assign_master,
+    create_request,
+    delete_comment,
+    delete_request,
     extend_deadline,
+    get_all_comments,
+    get_all_requests,
+    get_all_users,
+    get_client_by_id,
+    get_client_requests,
+    get_masters,
+    get_master_requests,
+    get_request_by_id,
+    get_statistics,
+    get_user_by_login,
+    manager_update_request,
     search_requests,
-    get_statistics
+    update_client_request,
+    update_parts,
+    update_status,
 )
 
 app = FastAPI()
-
 app.add_middleware(SessionMiddleware, secret_key="supersecretkey")
-
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
+STATUSES = [
+    "Новая заявка",
+    "В процессе ремонта",
+    "Ожидание запчастей",
+    "Готова к выдаче",
+]
 
-# ------------------------------------------------
-# Генерация QR-кода
-# ------------------------------------------------
 
 def generate_qr():
-    url = "https://docs.google.com/forms/d/e/1FAIpQLSdhZcExx6LSIXxk0ub55mSu-WIh23WYdGG9HY5EZhLDo7P8eA/viewform"
+    url = "https://docs.google.com/forms/d/e/1FAIpQLSdhZcExx6LSIXxk0ub55mSu-WIh23WYdGG9HY5EZhLDo7P8eA/viewform?usp=sf_link"
     img = qrcode.make(url)
     img.save("static/review_qr.png")
+
 
 generate_qr()
 
 
-# ------------------------------------------------
-# Проверка роли
-# ------------------------------------------------
 
-def check_role(request: Request, role: str):
-
-    user = request.session.get("user")
-
-    if not user:
-        return False
-
-    if user["type"] != role:
-        return False
-
-    return True
+def get_current_user(request: Request):
+    return request.session.get("user")
 
 
-# ------------------------------------------------
-# Главная
-# ------------------------------------------------
+
+def ensure_role(request: Request, role: str):
+    user = get_current_user(request)
+    return bool(user and user.get("type") == role)
+
+
+
+def redirect_home():
+    return RedirectResponse("/", status_code=303)
+
 
 @app.get("/")
 def home(request: Request):
+    user = get_current_user(request)
+    if user:
+        if user["type"] == "Мастер":
+            return RedirectResponse(f"/requests/{user['userID']}", status_code=303)
+        if user["type"] == "Заказчик":
+            return RedirectResponse(f"/client/{user['userID']}", status_code=303)
+        if user["type"] == "Менеджер":
+            return RedirectResponse("/manager", status_code=303)
+        if user["type"] == "Оператор":
+            return RedirectResponse("/operator", status_code=303)
+    return templates.TemplateResponse("login.html", {"request": request})
 
-    return templates.TemplateResponse(
-        "login.html",
-        {"request": request}
-    )
-
-
-# ------------------------------------------------
-# Авторизация
-# ------------------------------------------------
 
 @app.post("/login")
 def login(request: Request, login: str = Form(...), password: str = Form(...)):
-
     user = get_user_by_login(login, password)
-
     if not user:
-
         return templates.TemplateResponse(
             "login.html",
-            {"request": request, "error": "Неверный логин или пароль"}
+            {"request": request, "error": "Неверный логин или пароль"},
         )
 
     request.session["user"] = {
         "userID": user["userID"],
         "type": user["type"],
-        "fio": user["fio"]
+        "fio": user["fio"],
     }
-
-    user_id = user["userID"]
-    user_type = user["type"]
-
-    if user_type == "Мастер":
-        return RedirectResponse(f"/requests/{user_id}", status_code=303)
-
-    if user_type == "Заказчик":
-        return RedirectResponse(f"/client/{user_id}", status_code=303)
-
-    if user_type == "Менеджер":
-        return RedirectResponse("/manager", status_code=303)
-
-    if user_type == "Оператор":
-        return RedirectResponse("/operator", status_code=303)
-
     return RedirectResponse("/", status_code=303)
 
-
-# ------------------------------------------------
-# Выход
-# ------------------------------------------------
 
 @app.post("/logout")
 def logout(request: Request):
-
     request.session.clear()
+    return redirect_home()
 
-    return RedirectResponse("/", status_code=303)
-
-
-# ------------------------------------------------
-# Мастер
-# ------------------------------------------------
 
 @app.get("/requests/{master_id}")
 def requests_page(request: Request, master_id: int):
-
-    if not check_role(request, "Мастер"):
-        return RedirectResponse("/", status_code=303)
+    user = get_current_user(request)
+    if not user or user["type"] != "Мастер" or user["userID"] != master_id:
+        return redirect_home()
 
     requests = get_master_requests(master_id)
-
     return templates.TemplateResponse(
         "requests.html",
-        {
-            "request": request,
-            "requests": requests,
-            "master_id": master_id,
-            "user": request.session.get("user")
-        }
+        {"request": request, "requests": requests, "master_id": master_id, "statuses": STATUSES},
     )
 
 
-# ------------------------------------------------
-# Изменение статуса
-# ------------------------------------------------
-
 @app.post("/update_status")
 def change_status(
+    request: Request,
     request_id: int = Form(...),
     status: str = Form(...),
-    master_id: int = Form(...)
+    master_id: int = Form(...),
 ):
-
+    user = get_current_user(request)
+    if not user or user["type"] != "Мастер" or user["userID"] != master_id:
+        return redirect_home()
+    if status not in STATUSES:
+        return RedirectResponse(f"/requests/{master_id}", status_code=303)
     update_status(request_id, status)
-
     return RedirectResponse(f"/requests/{master_id}", status_code=303)
 
-
-# ------------------------------------------------
-# Запчасти
-# ------------------------------------------------
 
 @app.post("/add_parts")
 def add_parts(
+    request: Request,
     request_id: int = Form(...),
     parts: str = Form(...),
-    master_id: int = Form(...)
+    master_id: int = Form(...),
 ):
-
-    update_parts(request_id, parts)
-
+    user = get_current_user(request)
+    if not user or user["type"] != "Мастер" or user["userID"] != master_id:
+        return redirect_home()
+    update_parts(request_id, parts.strip())
     return RedirectResponse(f"/requests/{master_id}", status_code=303)
 
-
-# ------------------------------------------------
-# Комментарий
-# ------------------------------------------------
 
 @app.post("/add_comment")
 def add_master_comment(
+    request: Request,
     request_id: int = Form(...),
     comment: str = Form(...),
-    master_id: int = Form(...)
+    master_id: int = Form(...),
 ):
-
-    add_comment(request_id, master_id, comment)
-
+    user = get_current_user(request)
+    if not user or user["type"] != "Мастер" or user["userID"] != master_id:
+        return redirect_home()
+    if comment.strip():
+        add_comment(request_id, master_id, comment.strip())
     return RedirectResponse(f"/requests/{master_id}", status_code=303)
 
 
-# ------------------------------------------------
-# Клиент
-# ------------------------------------------------
-
 @app.get("/client/{client_id}")
-def client_requests(request: Request, client_id: int):
-
-    if not check_role(request, "Заказчик"):
-        return RedirectResponse("/", status_code=303)
+def client_requests_page(request: Request, client_id: int):
+    user = get_current_user(request)
+    if not user or user["type"] != "Заказчик" or user["userID"] != client_id:
+        return redirect_home()
 
     requests = get_client_requests(client_id)
-
+    client = get_client_by_id(client_id)
+    client_name = client["fio"] if client else "Клиент"
     return templates.TemplateResponse(
         "client_requests.html",
         {
             "request": request,
             "requests": requests,
             "client_id": client_id,
-            "user": request.session.get("user")
-        }
+            "client_name": client_name,
+            "statuses": STATUSES,
+        },
     )
 
 
-# ------------------------------------------------
-# Создание заявки
-# ------------------------------------------------
-
 @app.get("/create_request")
 def create_request_page(request: Request):
-
-    if not check_role(request, "Заказчик"):
-        return RedirectResponse("/", status_code=303)
-
-    user = request.session.get("user")
-
+    user = get_current_user(request)
+    if not user or user["type"] != "Заказчик":
+        return redirect_home()
     return templates.TemplateResponse(
         "create_request.html",
-        {
-            "request": request,
-            "client_id": user["userID"]
-        }
+        {"request": request, "client_id": user["userID"]},
     )
 
 
@@ -243,123 +200,178 @@ def submit_new_request(
     request: Request,
     homeTechType: str = Form(...),
     homeTechModel: str = Form(...),
-    problemDescription: str = Form(...)
+    problemDescription: str = Form(...),
 ):
+    user = get_current_user(request)
+    if not user or user["type"] != "Заказчик":
+        return redirect_home()
 
-    if not check_role(request, "Заказчик"):
-        return RedirectResponse("/", status_code=303)
-
-    user = request.session.get("user")
-
-    create_request(
-        homeTechType,
-        homeTechModel,
-        problemDescription,
-        user["userID"]
-    )
-
+    create_request(homeTechType.strip(), homeTechModel.strip(), problemDescription.strip(), user["userID"])
     return RedirectResponse(f"/client/{user['userID']}", status_code=303)
 
 
-# ------------------------------------------------
-# Оператор
-# ------------------------------------------------
+@app.get("/edit_request/{request_id}")
+def edit_request_page(request: Request, request_id: int):
+    user = get_current_user(request)
+    if not user or user["type"] != "Заказчик":
+        return redirect_home()
+
+    req = get_request_by_id(request_id)
+    if not req or req["clientID"] != user["userID"]:
+        return redirect_home()
+
+    return templates.TemplateResponse(
+        "create_request.html",
+        {"request": request, "client_id": user["userID"], "edit_request": req},
+    )
+
+
+@app.post("/edit_request")
+def update_request_by_client(
+    request: Request,
+    request_id: int = Form(...),
+    homeTechType: str = Form(...),
+    homeTechModel: str = Form(...),
+    problemDescription: str = Form(...),
+):
+    user = get_current_user(request)
+    if not user or user["type"] != "Заказчик":
+        return redirect_home()
+
+    update_client_request(
+        request_id,
+        user["userID"],
+        homeTechType.strip(),
+        homeTechModel.strip(),
+        problemDescription.strip(),
+    )
+    return RedirectResponse(f"/client/{user['userID']}", status_code=303)
+
 
 @app.get("/operator")
 def operator_page(request: Request):
-
-    if not check_role(request, "Оператор"):
-        return RedirectResponse("/", status_code=303)
-
+    if not ensure_role(request, "Оператор"):
+        return redirect_home()
     requests = get_all_requests()
-
+    masters = get_masters()
     return templates.TemplateResponse(
         "operator.html",
-        {
-            "request": request,
-            "requests": requests,
-            "user": request.session.get("user")
-        }
+        {"request": request, "requests": requests, "masters": masters, "statuses": STATUSES},
     )
 
 
 @app.post("/assign_master")
 def assign_master_to_request(
+    request: Request,
     request_id: int = Form(...),
-    master_id: int = Form(...)
+    master_id: int = Form(...),
 ):
-
+    if not ensure_role(request, "Оператор"):
+        return redirect_home()
     assign_master(request_id, master_id)
-
     return RedirectResponse("/operator", status_code=303)
 
 
-# ------------------------------------------------
-# Менеджер
-# ------------------------------------------------
+@app.get("/search")
+def search(
+    request: Request,
+    number: str = None,
+    status: str = None,
+    q: str = None,
+):
+    user = get_current_user(request)
+    if not user or user["type"] not in {"Оператор", "Менеджер"}:
+        return redirect_home()
+
+    results = search_requests(number, status, q)
+    return templates.TemplateResponse(
+        "search_results.html",
+        {"request": request, "requests": results, "statuses": STATUSES},
+    )
+
 
 @app.get("/manager")
 def manager_page(request: Request):
-
-    if not check_role(request, "Менеджер"):
-        return RedirectResponse("/", status_code=303)
-
+    if not ensure_role(request, "Менеджер"):
+        return redirect_home()
     requests = get_all_requests()
-
+    users = get_all_users()
+    comments = get_all_comments()
+    masters = get_masters()
     return templates.TemplateResponse(
         "manager.html",
         {
             "request": request,
             "requests": requests,
-            "user": request.session.get("user")
-        }
+            "users": users,
+            "comments": comments,
+            "masters": masters,
+            "statuses": STATUSES,
+        },
     )
 
 
-# ------------------------------------------------
-# Продление срока
-# ------------------------------------------------
-
-@app.post("/extend_deadline")
-def extend_request_deadline(
+@app.post("/manager_update_request")
+def manager_update_request_route(
+    request: Request,
     request_id: int = Form(...),
-    new_deadline: str = Form(...)
+    status: str = Form(...),
+    master_id: str = Form(""),
+    parts: str = Form(""),
 ):
+    if not ensure_role(request, "Менеджер"):
+        return redirect_home()
 
-    extend_deadline(request_id, new_deadline)
-
+    master_id_value = int(master_id) if master_id.strip() else None
+    parts_value = parts.strip() if parts.strip() else None
+    if status not in STATUSES:
+        return RedirectResponse("/manager", status_code=303)
+    manager_update_request(request_id, status, master_id_value, parts_value)
     return RedirectResponse("/manager", status_code=303)
 
 
-# ------------------------------------------------
-# Статистика
-# ------------------------------------------------
+@app.post("/extend_deadline")
+def extend_request_deadline(
+    request: Request,
+    request_id: int = Form(...),
+    new_deadline: str = Form(...),
+):
+    if not ensure_role(request, "Менеджер"):
+        return redirect_home()
+    extend_deadline(request_id, new_deadline)
+    return RedirectResponse("/manager", status_code=303)
+
+
+@app.post("/delete_request")
+def delete_request_route(request: Request, request_id: int = Form(...)):
+    if not ensure_role(request, "Менеджер"):
+        return redirect_home()
+    delete_request(request_id)
+    return RedirectResponse("/manager", status_code=303)
+
+
+@app.post("/delete_comment")
+def delete_comment_route(request: Request, comment_id: int = Form(...)):
+    if not ensure_role(request, "Менеджер"):
+        return redirect_home()
+    delete_comment(comment_id)
+    return RedirectResponse("/manager", status_code=303)
+
 
 @app.get("/statistics")
 def statistics_page(request: Request):
-
-    if not check_role(request, "Менеджер"):
-        return RedirectResponse("/", status_code=303)
-
+    user = get_current_user(request)
+    if not user or user["type"] not in {"Менеджер", "Оператор"}:
+        return redirect_home()
     stats = get_statistics()
-
     return templates.TemplateResponse(
         "statistics.html",
-        {
-            "request": request,
-            "stats": stats
-        }
+        {"request": request, "stats": stats},
     )
 
-
-# ------------------------------------------------
-# QR отзыв
-# ------------------------------------------------
 
 @app.get("/review")
 def review_page(request: Request):
-
-    return templates.TemplateResponse(
-        "review.html",
-        {"request": request}
-    )
+    if not get_current_user(request):
+        return redirect_home()
+    return templates.TemplateResponse("review.html", {"request": request})
