@@ -1,25 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Панель оператора</title>
+<link rel="stylesheet" href="/static/style.css">
+
+<style>
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.logout-btn{
+padding:6px 12px;
+background:#e74c3c;
+color:white;
+border:none;
+cursor:pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
 <h1>Панель оператора</h1>
 
-<table border="1">
+<form method="post" action="/logout">
+<button class="logout-btn">Выход</button>
+</form>
+
+</div>
+
+<p>Вы вошли как: <b>{{ user.fio }}</b></p>
+
+<table class="requests-table">
 
 <tr>
-<th>ID</th>
-<th>Клиент</th>
-<th>Мастер</th>
-<th>Описание</th>
+<th>№ заявки</th>
+<th>ID клиента</th>
+<th>Тип техники</th>
+<th>Модель</th>
+<th>Описание проблемы</th>
+<th>ID мастера</th>
 <th>Статус</th>
+<th>Дата</th>
+<th>Назначить мастера</th>
+<th>Изменить статус</th>
 </tr>
 
 {% for r in requests %}
 
 <tr>
+
 <td>{{ r.requestID }}</td>
+
 <td>{{ r.clientID }}</td>
+
+<td>{{ r.homeTechType }}</td>
+
+<td>{{ r.homeTechModel }}</td>
+
+<td>{{ r.problemDescription }}</td>
+
 <td>{{ r.masterID }}</td>
-<td>{{ r.description }}</td>
-<td>{{ r.status }}</td>
+
+<td>{{ r.requestStatus }}</td>
+
+<td>{{ r.startDate }}</td>
+
+<td>
+
+<form method="post" action="/assign_master">
+<input type="hidden" name="request_id" value="{{ r.requestID }}">
+<input type="number" name="master_id" placeholder="ID мастера" required>
+<button type="submit">Назначить</button>
+</form>
+
+</td>
+
+<td>
+
+<form method="post" action="/update_status">
+<input type="hidden" name="request_id" value="{{ r.requestID }}">
+<input type="hidden" name="master_id" value="{{ r.masterID }}">
+
+<select name="status">
+<option>Новая заявка</option>
+<option>В процессе ремонта</option>
+<option>Ожидание запчастей</option>
+<option>Готова к выдаче</option>
+</select>
+
+<button type="submit">Изменить</button>
+
+</form>
+
+</td>
+
 </tr>
 
 {% endfor %}
 
 </table>
+
+</body>
+</html>

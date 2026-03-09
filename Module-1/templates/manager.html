@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <link rel="stylesheet" href="/static/style.css">
-<title>Панель менеджера</title>
+    <title>Панель менеджера</title>
 </head>
 
 <body>
 
 <h1>Все заявки в системе</h1>
 
-<table border="1">
+<table class="requests-table">
 
 <tr>
 <th>ID заявки</th>
@@ -21,6 +22,8 @@
 <th>Дата</th>
 </tr>
 
+{% if requests %}
+
 {% for r in requests %}
 
 <tr>
@@ -29,19 +32,27 @@
 
 <td>{{ r.clientID }}</td>
 
-<td>{{ r.masterID if r.masterID else "Не назначен" }}</td>
+<td>{{ r.masterID or "Не назначен" }}</td>
 
 <td>{{ r.problemDescription }}</td>
 
 <td>{{ r.requestStatus }}</td>
 
-<td>{{ r.repairParts if r.repairParts else "Нет" }}</td>
+<td>{{ r.repairParts or "Нет" }}</td>
 
 <td>{{ r.startDate }}</td>
 
 </tr>
 
 {% endfor %}
+
+{% else %}
+
+<tr>
+<td colspan="7">Заявок пока нет</td>
+</tr>
+
+{% endif %}
 
 </table>
 

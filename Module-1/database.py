@@ -173,7 +173,7 @@ def create_request(homeTechType, homeTechModel, problemDescription, clientID):
             sql = """
             INSERT INTO repair_requests
             (homeTechType, homeTechModel, problemDescription, clientID, requestStatus, startDate)
-            VALUES (%s, %s, %s, %s, %s, NOW())
+            VALUES (%s, %s, %s, %s, %s, CURDATE())
             """
 
             cursor.execute(sql, (
@@ -223,7 +223,7 @@ def add_comment(request_id, master_id, comment):
         with connection.cursor() as cursor:
 
             sql = """
-            INSERT INTO comments (requestID, masterID, commentText)
+            INSERT INTO comments (requestID, masterID, message)
             VALUES (%s, %s, %s)
             """
 
@@ -246,7 +246,7 @@ def extend_deadline(request_id, new_deadline):
 
             sql = """
             UPDATE repair_requests
-            SET deadline = %s
+            SET completionDate = %s
             WHERE requestID = %s
             """
 

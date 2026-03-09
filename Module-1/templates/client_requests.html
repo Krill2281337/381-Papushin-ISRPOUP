@@ -1,49 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
     <title>Мои заявки</title>
-    <style>
-        /* Дополнительные кнопки в шапке */
-        .header-buttons {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            gap: 10px;
-        }
-
-        .header-buttons form button {
-            padding: 8px 14px;
-            font-size: 14px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
-            color: #fff;
-            font-weight: 600;
-            transition: all 0.3s ease, transform 0.2s ease;
-        }
-
-        .header-buttons form button:hover {
-            transform: translateY(-2px) scale(1.03);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-        }
-    </style>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 
 <body>
 
-<header style="position: relative;">
-    Мои заявки
-    <div class="header-buttons">
-        <!-- Кнопка создания новой заявки -->
-        <form method="get" action="/create_request">
+<header>
+    <h2>Мои заявки</h2>
+<p>Вы вошли как: <b>{{ user.fio }}</b></p>
+    <div style="position:absolute; top:20px; right:20px;">
+        <form method="get" action="/create_request" style="display:inline;">
             <button type="submit">Создать заявку</button>
         </form>
 
-        <!-- Кнопка выхода -->
-        <form method="post" action="/logout">
+        <form method="post" action="/logout" style="display:inline;">
             <button type="submit">Выход</button>
         </form>
     </div>
@@ -51,29 +24,36 @@
 
 <div class="container">
 
-    <div class="card">
+<table class="requests-table">
 
-        <table>
-            <tr>
-                <th>Тип техники</th>
-                <th>Модель</th>
-                <th>Описание</th>
-                <th>Статус</th>
-                <th>Дата начала</th>
-            </tr>
+<tr>
+    <th>№ заявки</th>
+    <th>Тип техники</th>
+    <th>Модель</th>
+    <th>Описание проблемы</th>
+    <th>Статус</th>
+    <th>Дата начала</th>
+</tr>
 
-            {% for r in requests %}
-            <tr>
-                <td>{{ r.homeTechType }}</td>
-                <td>{{ r.homeTechModel }}</td>
-                <td>{{ r.problemDescription }}</td>
-                <td>{{ r.requestStatus }}</td>
-                <td>{{ r.startDate }}</td>
-            </tr>
-            {% endfor %}
-        </table>
+{% for r in requests %}
+<tr>
 
-    </div>
+<td>{{ r.requestID }}</td>
+
+<td>{{ r.homeTechType }}</td>
+
+<td>{{ r.homeTechModel }}</td>
+
+<td>{{ r.problemDescription }}</td>
+
+<td>{{ r.requestStatus }}</td>
+
+<td>{{ r.startDate }}</td>
+
+</tr>
+{% endfor %}
+
+</table>
 
 </div>
 
