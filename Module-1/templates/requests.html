@@ -2,71 +2,70 @@
 <html>
 <link rel="stylesheet" href="/static/style.css">
 <head>
-<title>Панель мастера</title>
+    <title>Панель мастера</title>
 </head>
 
 <body>
 
-<h2>Мои заявки</h2>
+<!-- Шапка с именем мастера и кнопкой выхода -->
+<div style="display:flex; justify-content: space-between; align-items: center; margin-bottom:20px;">
+    <h2>
+        {% if request.session.user %}
+            Мастер: {{ request.session.user.fio }}
+        {% else %}
+            Панель мастера
+        {% endif %}
+    </h2>
+
+    <form action="/logout" method="post">
+        <button type="submit">Выйти</button>
+    </form>
+</div>
+
+<h3>Мои заявки</h3>
 
 <table border="1">
 
 <tr>
-<th>ID</th>
-<th>Техника</th>
-<th>Модель</th>
-<th>Проблема</th>
-<th>Статус</th>
-<th>Изменить статус</th>
-<th>Добавить запчасти</th>
+    <th>ID</th>
+    <th>Техника</th>
+    <th>Модель</th>
+    <th>Проблема</th>
+    <th>Статус</th>
+    <th>Изменить статус</th>
+    <th>Добавить запчасти</th>
 </tr>
 
 {% for r in requests %}
-
 <tr>
+    <td>{{ r.requestID }}</td>
+    <td>{{ r.homeTechType }}</td>
+    <td>{{ r.homeTechModel }}</td>
+    <td>{{ r.problemDescription }}</td>
+    <td>{{ r.requestStatus }}</td>
 
-<td>{{ r.requestID }}</td>
-<td>{{ r.homeTechType }}</td>
-<td>{{ r.homeTechModel }}</td>
-<td>{{ r.problemDescription }}</td>
-<td>{{ r.requestStatus }}</td>
+    <td>
+        <form action="/update_status" method="post">
+            <input type="hidden" name="request_id" value="{{ r.requestID }}">
+            <input type="hidden" name="master_id" value="{{ master_id }}">
+            <select name="status">
+                <option>Новая заявка</option>
+                <option>В процессе ремонта</option>
+                <option>Готова к выдаче</option>
+            </select>
+            <button type="submit">Изменить</button>
+        </form>
+    </td>
 
-<td>
-
-<form action="/update_status" method="post">
-
-<input type="hidden" name="request_id" value="{{ r.requestID }}">
-
-<select name="status">
-
-<option>Новая заявка</option>
-<option>В процессе ремонта</option>
-<option>Готова к выдаче</option>
-
-</select>
-
-<button type="submit">Изменить</button>
-
-</form>
-
-</td>
-
-<td>
-
-<form action="/add_parts" method="post">
-
-<input type="hidden" name="request_id" value="{{ r.requestID }}">
-
-<input type="text" name="parts" placeholder="Запчасти">
-
-<button type="submit">Добавить</button>
-
-</form>
-
-</td>
-
+    <td>
+        <form action="/add_parts" method="post">
+            <input type="hidden" name="request_id" value="{{ r.requestID }}">
+            <input type="hidden" name="master_id" value="{{ master_id }}">
+            <input type="text" name="parts" placeholder="Запчасти">
+            <button type="submit">Добавить</button>
+        </form>
+    </td>
 </tr>
-
 {% endfor %}
 
 </table>

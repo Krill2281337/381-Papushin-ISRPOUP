@@ -1,0 +1,21 @@
+<h2>Результаты поиска</h2>
+
+<table border="1">
+<tr>
+<th>ID</th>
+<th>Тип техники</th>
+<th>Модель</th>
+<th>Статус</th>
+</tr>
+
+{% for r in requests %}
+
+<tr>
+<td>{{ r.requestID }}</td>
+<td>{{ r.homeTechType }}</td>
+<td>{{ r.homeTechModel }}</td>
+<td>{{ r.requestStatus }}</td>
+</tr>
+
+{% endfor %}
+</table>

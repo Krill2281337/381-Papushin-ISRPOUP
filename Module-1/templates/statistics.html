@@ -1,0 +1,22 @@
+<h2>Статистика сервиса</h2>
+
+<p>Всего заявок: {{ stats.total }}</p>
+<p>Выполнено: {{ stats.completed }}</p>
+
+<h3>Статистика по технике</h3>
+
+<table border="1">
+<tr>
+<th>Тип техники</th>
+<th>Количество</th>
+</tr>
+
+{% for t in stats.tech_stats %}
+
+<tr>
+<td>{{ t.homeTechType }}</td>
+<td>{{ t.count }}</td>
+</tr>
+
+{% endfor %}
+</table>
